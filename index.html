@@ -6469,7 +6469,7 @@ function buildOriginPainted() {
   layoutOriginPainted();
   /* selector temporal de propuestas */
   const pick = document.createElement('nav'); pick.className = 'o-picker'; pick.setAttribute('aria-label', 'Propuestas de paisaje (temporal)');
-  pick.innerHTML = 'Origen ' + ['A', 'B', 'C'].map(k => `<a href="?origen=${k}#origin" class="${k === O.id ? 'on' : ''}">${k}</a>`).join('');
+  pick.innerHTML = 'Propuesta ' + ['A', 'B', 'C'].map(k => `<a href="?origen=${k}#origin" class="${k === O.id ? 'on' : ''}">${k}</a>`).join('');
   document.body.appendChild(pick);
 }
 
@@ -6658,6 +6658,7 @@ function openCurtain() {
       gsap.set(curtain.arts, { clearProps: 'transform' });
       joinScroll();
       lenis && lenis.start();
+      jumpToHash();
     },
   });
   document.documentElement.classList.remove('is-loading');
@@ -6883,6 +6884,14 @@ function computeStarts() {
   [...SECTIONS, '#manifesto'].forEach(id => { const el = pinParent($(id)); STARTS[id] = el.getBoundingClientRect().top + window.scrollY; });
   STARTS['#top'] = 0;
   $$('.vine-node').forEach(n => { const y = Math.min(0.98, STARTS[n.dataset.id] / max); n.style.top = (y * 100).toFixed(2) + '%'; });
+}
+/* enlace directo a una escena (p. ej. …/#origin): al abrir el telón salta al inicio del pin de esa escena */
+function jumpToHash() {
+  const id = location.hash;
+  if (!id || id === '#top' || STARTS[id] == null) return;
+  const y = STARTS[id] + 2;
+  if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
+  ScrollTrigger.update();
 }
 function navScroll() {
   const nav = $('.nav'), vine = $('.vine');
